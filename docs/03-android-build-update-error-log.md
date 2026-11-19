@@ -71,3 +71,17 @@
 - 사용자에게 설치된 앱의 버전을 확인해 해당 artifact와 대조해야 합니다.
 - 기존 키와 동일하다는 근거 없이 새 고정 키로 release APK를 빌드하거나 업데이트 가능하다고 안내하지 않습니다.
 - 새 고정 키로 빌드하면 향후 업데이트 일관성은 확보할 수 있지만, 과거 설치본을 무삭제 업데이트할 수 있다는 뜻은 아닙니다.
+
+## 사례 002 — Easy Navi Starter 0.2.5 빌드 차단 및 무삭제 업데이트 보호
+
+- 확인 날짜: 2026-11-19
+- 프로젝트: https://github.com/ryoobach/Easy_Navi_Starter
+- 현재 소스 버전: applicationId `com.ryoobach.easynavistarter`, versionCode 7, versionName 0.2.5.
+- 최신 workflow run: 44514987453 (run 26), 결과 failure.
+- 확인된 workflow 실패 원인: `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD` 네 가지 persistent release signing secrets가 설정되지 않아 서명 키 준비 단계에서 중단됨.
+- 과거 artifact에서 확인된 인증서 SHA-256은 run 5 / run 6 / run 20이 서로 모두 달랐음(사례 001 참조).
+- 따라서 과거 빌드 중 어느 키가 현재 사용자 기기에 설치된 앱의 키인지 확인되지 않았고, 과거 개인 키를 복원할 근거도 아직 없음.
+- Android 공식 업데이트 조건상 applicationId가 같아도 서명 인증서가 다르면 업데이트가 거부됨. versionCode만 올리거나 새 고정 키를 생성하는 것으로 이 문제를 해결할 수 없음.
+- 안전 조치: 기존 앱을 삭제하지 않도록 새 키로 서명한 APK의 배포 및 업데이트 가능 안내를 보류함.
+- 현재 상태: 차단 — 기존 설치본과 일치하는 서명 키 복구가 필요함.
+- 다음 조치: 기존 signing keystore의 안전한 백업 또는 과거 빌드 환경에서 사용한 키를 찾는다. 복구 후 지문 일치, versionCode 증가, 기존 앱 무삭제 설치 테스트를 모두 통과한 APK만 배포한다.
