@@ -24,3 +24,5 @@
 
 - https://github.com/ryoobach/Easy-Health
 - https://github.com/ryoobach/Easy_Save_Audio
+
+- [Android 빌드·업데이트 오류 해결 기록](docs/03-android-build-update-error-log.md)
